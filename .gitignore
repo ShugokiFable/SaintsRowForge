@@ -1,0 +1,14 @@
+# third-party tooling & sources are user-acquired, never redistributed
+inbox/
+tools_vault/
+tools_src/
+
+# scratch
+tmp_e2e/
+out.txt
+err.txt
+__pycache__/
+*.pyc
+
+# local mod workspaces live in %LOCALAPPDATA%\SaintsRowForge\Workspaces
+Workspaces/
