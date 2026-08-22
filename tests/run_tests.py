@@ -265,6 +265,49 @@ def t_scope_guard_fails_on_unexpected():
         assert "SRF-DIFF-001" in e.code
 
 
+def t_merge_union_and_conflict():
+    """Cross-mod table merge: additions union, distinct edits coexist,
+    same-field conflicts logged (later wins), vanilla never touched."""
+    import tempfile
+    from srforge.core import merger
+    from srforge.formats.xtbl import Xtbl
+
+    def _mk(path, records):
+        body = "".join(
+            f"<Record><Name>{n}</Name><Damage>{d}</Damage></Record>"
+            for n, d in records)
+        open(path, "w", encoding="utf-8").write(
+            f"<Table><Records>{body}</Records></Table>")
+        return Xtbl.load(path)
+
+    with tempfile.TemporaryDirectory() as td:
+        van = os.path.join(td, "vanilla"); os.makedirs(van)
+        m1 = os.path.join(td, "modA"); os.makedirs(m1)
+        m2 = os.path.join(td, "modB"); os.makedirs(m2)
+        _mk(os.path.join(van, "weapons.xtbl"),
+            [("Base", 10), ("Shared", 20)])
+        _mk(os.path.join(m1, "weapons.xtbl"),
+            [("Base", 15), ("Shared", 22), ("ModA_Gun", 99)])
+        _mk(os.path.join(m2, "weapons.xtbl"),
+            [("Shared", 25), ("ModB_Gun", 77), ("Base", 12)])
+
+        out = os.path.join(td, "out")
+        rep = merger.merge_tables(van, [m1, m2], out)
+        merged = Xtbl.load(os.path.join(out, "weapons.xtbl"))
+        names = {r.find("Name").text for r in merged.records()}
+        assert names == {"Base", "Shared", "ModA_Gun", "ModB_Gun"}, names
+        g = lambda n, f: merged.get_field(n, f).text
+        assert g("Base", "Damage") == "12"      # A then B edited -> conflict, later wins
+        assert g("Shared", "Damage") == "25"    # conflict -> later mod wins
+        e = rep[0]
+        assert len(e["conflicts"]) >= 2 and any(
+            c["record"] == "Shared" for c in e["conflicts"])
+        assert any("+ModA_Gun" in a for a in e["additions"])
+        assert any("+ModB_Gun" in a for a in e["additions"])
+
+    print("ok t_merge_union_and_conflict")
+
+
 def t_malformed_job_rejected():
     from srforge.core import modbuild
     root = tempfile.mkdtemp(prefix="srfbad_")
@@ -304,6 +347,7 @@ if __name__ == "__main__":
     check("index missing file -> SRF-IDX-001", t_index_missing_file_error)
     check("E2E extract->patch->diff->scope->build", t_e2e_extract_patch_build_diff_receipt)
     check("scope guard rejects collateral damage", t_scope_guard_fails_on_unexpected)
+    check("merge union + conflict", t_merge_union_and_conflict)
     check("malformed job rejected cleanly", t_malformed_job_rejected)
 
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")

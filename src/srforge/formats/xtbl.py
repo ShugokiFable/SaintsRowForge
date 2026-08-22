@@ -201,22 +201,25 @@ def _serialize(elem) -> str:
     return "".join(parts)
 
 
-def _ser_rec(e, depth) -> str:
+def _ser_rec(e, depth, lead=None) -> str:
     pad = "\t" * depth
+    head = _esc(lead) if lead else ""
     inner = []
     for node in e:
         if not isinstance(node.tag, str):  # Comment
             comment_text = self_text(node)
             inner.append(f"<!--{comment_text}-->")
-        elif len(node):
-            inner.append(_ser_rec(node, depth + 1))
-        elif node.text:
-            inner.append(f"{pad}\t<{node.tag}>{_esc(node.text)}</{node.tag}>")
         else:
-            inner.append(f"{pad}\t<{node.tag} />")
+            node_lead = (node.text or "").strip()
+            if len(node):
+                inner.append(_ser_rec(node, depth + 1, lead=node_lead or None))
+            elif node_lead:
+                inner.append(f"{pad}\t<{node.tag}>{_esc(node_lead)}</{node.tag}>")
+            else:
+                inner.append(f"{pad}\t<{node.tag} />")
     body = "\n" + "\n".join(inner) + ("\n" + pad if inner else "")
     attrs = "".join(f' {k}="{v}"' for k, v in e.attrib.items())
-    return f"{pad}<{e.tag}{attrs}>{body}</{e.tag}>"
+    return f"{pad}<{e.tag}{attrs}>{head}{body}</{e.tag}>"
 
 
 def self_text(comment_node) -> str:

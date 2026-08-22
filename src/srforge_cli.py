@@ -246,6 +246,9 @@ def cmd_mod(args):
         _emit({"extracted": out})
         return ExitCode.OK
 
+    if args.op == "merge":
+        return merge_flow(args)
+
     if args.op == "patch":
         ws = args.workspace
         ops = modbuild.load_jobs(ws)
@@ -363,6 +366,47 @@ def build_flow(args):
     return ExitCode.OK
 
 
+def merge_flow(args):
+    """Mod-manager core: union N mods' table edits into one installable pack."""
+    from srforge.core import merger
+    game = args.game
+    idx = _index_for(game)
+    mod_dirs = [os.path.abspath(d) for d in args.mods if os.path.isdir(d)]
+    if not mod_dirs:
+        raise ForgeError("SRF-MERGE-004", "no valid mod directories given")
+    ws = new_workspace(os.path.join(forge_root(), "Workspaces"),
+                       "merge-" + os.path.basename(mod_dirs[-1]), game)
+    # 1. vanilla copies of every shared table (diff base)
+    tables = merger.find_tables(mod_dirs)
+    for fname in tables:
+        f = os.path.basename(fname)
+        dst = os.path.join(ws, "vanilla")
+        os.makedirs(dst, exist_ok=True)
+        modbuild.extract_to(idx, f, dst)
+    # 2. merge
+    report = merger.merge_tables(os.path.join(ws, "vanilla"), mod_dirs,
+                                 os.path.join(ws, "working"))
+    with open(os.path.join(ws, "merge-report.json"), "w", encoding="utf-8") as fh:
+        json.dump(report, fh, indent=2)
+    # 3. one pack per merged table
+    pkg_dir = os.path.join(ws, "release")
+    built = []
+    for e in report:
+        if not e.get("written"):
+            continue
+        out = os.path.join(pkg_dir, os.path.splitext(e["file"])[0] + ".vpp_pc")
+        built.append({"file": e["file"], **modbuild.build_package(
+            game, os.path.dirname(e["written"]), out, asm_update=None)})
+        e["package"] = out
+    _emit({"workspace": ws,
+           "tables_merged": [e["file"] for e in report if e.get("written")],
+           "conflicts": sum(len(e.get("conflicts", [])) for e in report),
+           "additions": sum(len(e.get("additions", [])) for e in report),
+           "packages": [b["sha256"][:12] for b in built],
+           "report": os.path.join(ws, "merge-report.json")})
+    return ExitCode.OK
+
+
 def cmd_deps(args):
     inbox = os.path.join(forge_root(), "inbox")
     vault = os.path.join(forge_root(), "tools_vault")
@@ -411,6 +455,11 @@ def main(argv=None):
     sp.add_argument("--workspace")
     sp.add_argument("--game")
     sp.set_defaults(func=cmd_mod)
+
+    sp = sub.add_parser("merge"); sp.add_argument("--json", action="store_true")
+    sp.add_argument("--game", required=True)
+    sp.add_argument("mods", nargs="+")
+    sp.set_defaults(func=merge_flow)
 
     sp = sub.add_parser("deps"); sp.add_argument("--json", action="store_true")
     sp.add_argument("op", choices=["import", "status"])
