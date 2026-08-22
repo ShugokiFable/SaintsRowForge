@@ -16,11 +16,16 @@ foreach ($d in @("Workspaces", "Inbox", "logs")) {
 }
 
 # core (code only - never game files, never third-party binaries)
-foreach ($item in @("src", "mcp_server", "tests", "README.md",
-                    "AI-INTEGRATION.md", "THIRD-PARTY-NOTICES.md")) {
+foreach ($item in @("src", "mcp_server", "tests", "knowledge", "scripts",
+                    "README.md", "AI-INTEGRATION.md", "THIRD-PARTY-NOTICES.md")) {
     $from = Join-Path $src $item
     if (Test-Path $from) {
-        Copy-Item -Recurse -Force $from (Join-Path $dst $item)
+        if ((Get-Item $from).PSIsContainer) {
+            robocopy $from (Join-Path $dst $item) /MIR /NFL /NDL /NJH | Out-Null
+            if ($LASTEXITCODE -ge 8) { Write-Error "robocopy failed on $item"; exit 1 }
+        } else {
+            Copy-Item -Force $from (Join-Path $dst $item)
+        }
     }
 }
 
