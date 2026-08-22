@@ -2,7 +2,7 @@
 
 An AI-operable modding workbench for **Saints Row: The Third** (PC) and
 **Saints Row IV** (PC). Deterministic Python core, honest capability
-reporting, machine-readable receipts. Installable standalone; usable by any
+reporting, machine-readable receipts. [![tests](https://github.com/ShugokiFable/SaintsRowForge/actions/workflows/tests.yml/badge.svg)](https://github.com/ShugokiFable/SaintsRowForge/actions/workflows/tests.yml) Installable standalone; usable by any
 MCP-capable agent (Hermes, Claude Desktop, Codex, ...) or directly via CLI.
 
 ## Status (what actually works — all verified on real game installs)
