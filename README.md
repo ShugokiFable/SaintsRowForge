@@ -15,7 +15,24 @@ MCP-capable agent (Hermes, Claude Desktop, Codex, ...) or directly via CLI.
 | ASM inspect/update (str2 sizes) | ✅ | ✅ byte-perfect round-trip vs vanilla |
 | le_strings extract/build | ✅ | ✅ |
 | Lua static lint | ✅ | ✅ |
+| Cross-mod table **merge** (mod manager) | ✅ | ✅ |
 | PEG/CPEG textures / meshes / audio / workshop | ❌ not implemented (reported `unsupported`) | ❌ not implemented (reported `unsupported`) |
+
+### Merging mods (`srforge merge`)
+
+Saints Row mods ship full copies of shared tables; installing two mods that
+touch the same table normally means last-one-wins data loss. The forge
+three-way merges every `.xtbl` against vanilla instead:
+
+```bash
+srforge merge --game sriv "path/to/ModA" "path/to/ModB"
+```
+
+- records added by either mod -> both survive
+- distinct edits to different fields -> all applied
+- two mods editing the same field -> **conflict logged** in
+  `merge-report.json` (later-listed mod wins; every value is kept in the report)
+- non-table file collisions (`.str2_pc`, `.asm_pc`, ...) -> flagged, later wins
 
 Vanilla archives are **never written**; every build goes to a workspace.
 The capability matrix (`srforge doctor`, `sr_capabilities`) is the source of
