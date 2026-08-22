@@ -1,9 +1,20 @@
 # Saints Row Forge
 
+[![tests](https://github.com/ShugokiFable/SaintsRowForge/actions/workflows/tests.yml/badge.svg)](https://github.com/ShugokiFable/SaintsRowForge/actions/workflows/tests.yml)
+
 An AI-operable modding workbench for **Saints Row: The Third** (PC) and
 **Saints Row IV** (PC). Deterministic Python core, honest capability
-reporting, machine-readable receipts. [![tests](https://github.com/ShugokiFable/SaintsRowForge/actions/workflows/tests.yml/badge.svg)](https://github.com/ShugokiFable/SaintsRowForge/actions/workflows/tests.yml) Installable standalone; usable by any
+reporting, machine-readable receipts. Installable standalone; usable by any
 MCP-capable agent (Hermes, Claude Desktop, Codex, ...) or directly via CLI.
+
+## Install
+
+Grab the latest release zip from
+[Releases](https://github.com/ShugokiFable/SaintsRowForge/releases), unpack,
+run `Install.ps1` (no admin) - installs to `%LOCALAPPDATA%\SaintsRowForge`
+and verifies itself. `START-HERE.bat` gives a status/help launcher;
+`Update.ps1` / `Uninstall.ps1` included. Or just clone and run from source -
+the CLI below works either way (`python src\srforge_cli.py ...`).
 
 ## Status (what actually works — all verified on real game installs)
 
@@ -92,7 +103,7 @@ unregistered binaries. See THIRD-PARTY-NOTICES.md.
 ## Tests
 
 ```
-python tests\run_tests.py          # 17 checks, no pytest needed, no game assets needed
+python tests\run_tests.py          # 18 checks, no pytest needed, no game assets needed
 ```
 
 Real-install validation is separate: doctor + the E2E flow above were run
