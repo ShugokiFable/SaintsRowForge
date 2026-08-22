@@ -7,14 +7,62 @@ An AI-operable modding workbench for **Saints Row: The Third** (PC) and
 reporting, machine-readable receipts. Installable standalone; usable by any
 MCP-capable agent (Hermes, Claude Desktop, Codex, ...) or directly via CLI.
 
-## Install
+## New here? (5 minutes)
 
-Grab the latest release zip from
-[Releases](https://github.com/ShugokiFable/SaintsRowForge/releases), unpack,
-run `Install.ps1` (no admin) - installs to `%LOCALAPPDATA%\SaintsRowForge`
-and verifies itself. `START-HERE.bat` gives a status/help launcher;
-`Update.ps1` / `Uninstall.ps1` included. Or just clone and run from source -
-the CLI below works either way (`python src\srforge_cli.py ...`).
+**You need:** Windows 10/11 · [Python](https://www.python.org/downloads/) 3.10+ ·
+Saints Row the Third and/or Saints Row IV (Steam PC).
+
+1. Grab the zip from [Releases](https://github.com/ShugokiFable/SaintsRowForge/releases), unzip anywhere
+2. Right-click `Install.ps1` → **Run with PowerShell** (no admin needed) — it installs to `%LOCALAPPDATA%\SaintsRowForge` and checks itself
+3. Double-click `START-HERE.bat` any time you want status/help
+
+Prefer git? Clone and run straight from source — same commands, just use
+the repo's `src\srforge_cli.py` instead of the installed path.
+
+### Your first mod — one weapon stat, fully receipted
+
+```bat
+set CLI=%LOCALAPPDATA%\SaintsRowForge\src\srforge_cli.py
+python %CLI% doctor
+python %CLI% mod new MyFirstMod --game sriv
+```
+
+Create `%LOCALAPPDATA%\SaintsRowForge\Workspaces\MyFirstMod\source\jobs\weapons.json`:
+
+```json
+{"operations": [
+  {"operation": "multiply", "file": "weapons.xtbl",
+   "record": "SMG-Storm", "field": "Magazine_Size", "value": 1.25}
+]}
+```
+
+```bat
+python %CLI% mod patch --workspace %LOCALAPPDATA%\SaintsRowForge\Workspaces\MyFirstMod
+python %CLI% mod diff  --workspace %LOCALAPPDATA%\SaintsRowForge\Workspaces\MyFirstMod
+python %CLI% mod build --workspace %LOCALAPPDATA%\SaintsRowForge\Workspaces\MyFirstMod
+```
+
+Done mod: `Workspaces\MyFirstMod\release\` — reopen-verified, SHA-256
+receipted. Your game files were never touched.
+
+### Installing your finished mod
+
+The forge deliberately never writes your game directory. The built `.vpp_pc`
+installs the same way as any other table mod for your game — current manual-install
+guides are linked in [`knowledge/07-ONLINE-GUIDE-LINKS.md`](knowledge/07-ONLINE-GUIDE-LINKS.md).
+
+### Got two mods that fight over the same table?
+
+That's exactly what the merge engine is for:
+
+```bat
+python %CLI% merge --game sriv "C:\path\to\ModA" "C:\path\to\ModB"
+```
+
+Additions union, distinct edits all land, real conflicts get reported —
+see the Merging section below.
+
+`Update.ps1` / `Uninstall.ps1` ship alongside `Install.ps1`.
 
 ## Status (what actually works — all verified on real game installs)
 
