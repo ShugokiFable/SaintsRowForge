@@ -5,7 +5,7 @@ import os
 from .receipts import ForgeError, sha256_file
 
 
-WORKSPACE_DIRS = ["source", "extracted", "working", "generated",
+WORKSPACE_DIRS = ["source/jobs", "source", "extracted", "working", "generated",
                   "package", "logs", "receipts", "tests", "release"]
 
 
@@ -15,7 +15,7 @@ def new_workspace(root, name, game):
         raise ForgeError("SRF-WS-001", f"workspace '{name}' already exists at {ws}")
     os.makedirs(ws)
     for d in WORKSPACE_DIRS:
-        os.makedirs(os.path.join(ws, d))
+        os.makedirs(os.path.join(ws, d), exist_ok=True)
     project = {
         "name": name,
         "game": game,

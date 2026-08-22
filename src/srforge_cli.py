@@ -252,6 +252,7 @@ def cmd_mod(args):
     if args.op == "patch":
         ws = args.workspace
         ops = modbuild.load_jobs(ws)
+        _ensure_extracted(ws, ops)
         results = modbuild.apply_ops(ops, os.path.join(ws, "extracted"),
                                      os.path.join(ws, "working"))
         _emit({"patched": len(results), "results": results})
@@ -299,6 +300,20 @@ def write_diff_artifacts(ws, changes):
     open(os.path.join(ws, "vanilla-diff.md"), "w", encoding="utf-8").write("\n".join(lines))
 
 
+def _ensure_extracted(ws, ops):
+    """Extract any job-named files missing from extracted/ (shared by
+    patch + build so the documented new->patch->diff->build order just
+    works without a separate extract step)."""
+    idx = None
+    files = sorted({op["file"] for op in ops if op.get("file")})
+    for f in files:
+        dst = os.path.join(ws, "extracted", f)
+        if not os.path.isfile(dst):
+            if idx is None:
+                idx = _index_for(game_of(ws))
+            modbuild.extract_to(idx, f, os.path.join(ws, "extracted"))
+
+
 def build_flow(args):
     ws = args.workspace
     game = game_of(ws)
@@ -308,11 +323,8 @@ def build_flow(args):
 
     # 1. ensure extraction + patch are current
     files = sorted({op["file"] for op in ops if op.get("file")})
+    _ensure_extracted(ws, ops)
     extracted = []
-    for f in files:
-        dst = os.path.join(ws, "extracted", f)
-        if not os.path.isfile(dst):
-            extracted.append(modbuild.extract_to(idx, f, os.path.join(ws, "extracted")))
     for f in files:
         if os.path.isfile(os.path.join(ws, "extracted", f)):
             receipt["input_hashes"][f] = sha256_file(os.path.join(ws, "extracted", f))
