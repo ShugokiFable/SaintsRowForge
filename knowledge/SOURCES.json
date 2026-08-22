@@ -1,0 +1,124 @@
+{
+  "generated": "2026-08-22",
+  "scope": ["Saints Row: The Third legacy PC", "Saints Row IV legacy PC"],
+  "sources": [
+    {
+      "id": "kinzies-toy-box",
+      "kind": "official_repo",
+      "games": ["srtt"],
+      "url": "https://github.com/volition-inc/Kinzies-Toy-Box",
+      "priority": 1,
+      "use_for": ["file formats", "vpp", "str2", "zone files", "lua script actions", "SR3 alpha tools"],
+      "redistribution": "license not declared in GitHub metadata; fetch locally rather than bundling a mirror"
+    },
+    {
+      "id": "zinyaks-cache",
+      "kind": "official_repo",
+      "games": ["sriv"],
+      "url": "https://github.com/volition-inc/Zinyaks-Cache-Of-Wonders",
+      "priority": 1,
+      "use_for": ["SRIV SDK", "FBX", "mesh crunching", "rig crunching", "texture crunching", "PEG assembly", "VPKG", "templates"],
+      "local_note": "already present in the supplied Forge under tools_vault/zinyaks"
+    },
+    {
+      "id": "thomasjepp",
+      "kind": "reference_implementation",
+      "games": ["srtt", "sriv"],
+      "url": "https://github.com/saintsrowmods2/ThomasJepp.SaintsRow",
+      "priority": 1,
+      "use_for": ["packfiles", "ASM", "strings", "soundbanks", "cloth", "texture metadata", "static mesh metadata"],
+      "local_note": "a ThomasJepp source tree already exists in tools_src"
+    },
+    {
+      "id": "sr-zone-tools",
+      "kind": "reference_implementation",
+      "games": ["srtt", "sriv"],
+      "url": "https://github.com/clarosa/SRZoneTools",
+      "priority": 1,
+      "use_for": ["czn", "gzn", "zone parsing", "zone conversion", "zone finding"],
+      "license": "custom redistribution license; preserve license and attribution"
+    },
+    {
+      "id": "gibbed-volition",
+      "kind": "reference_implementation",
+      "games": ["srtt", "sriv"],
+      "url": "https://github.com/gibbed/Gibbed.Volition",
+      "priority": 2,
+      "use_for": ["cross-check binary formats", "Volition engine tooling"],
+      "license": "zlib"
+    },
+    {
+      "id": "saintsrowmods-file-search",
+      "kind": "live_index",
+      "games": ["srtt", "sriv"],
+      "url": "https://saintsrowmods.com/search/",
+      "priority": 1,
+      "use_for": ["file -> VPP/STR2 lookup", "ASM mapping", "package contents"]
+    },
+    {
+      "id": "srtt-modding-basics",
+      "kind": "community_staff_guide",
+      "games": ["srtt"],
+      "url": "https://www.saintsrowmods.com/forum/threads/saints-row-the-third-modding-basics.597/",
+      "priority": 2,
+      "use_for": ["load order", "file types", "basic XTBL/STR2/ASM workflow"]
+    },
+    {
+      "id": "sriv-workshop-start",
+      "kind": "volition_staff_guide",
+      "games": ["sriv"],
+      "url": "https://www.saintsrowmods.com/forum/threads/getting-started-with-steam-workshop.14636/",
+      "priority": 2,
+      "use_for": ["Workshop", "file types", "packaging", "asset extraction"]
+    },
+    {
+      "id": "sriv-sdk-customization",
+      "kind": "sdk_guide",
+      "games": ["sriv"],
+      "url": "https://www.saintsrowmods.com/forum/threads/sriv-sdk-release-b-adding-new-customization-items.14660/",
+      "priority": 2,
+      "use_for": ["customization cloning", "reference strings", "Workshop package testing"]
+    },
+    {
+      "id": "sriv-sdk-clothing-tools",
+      "kind": "sdk_release",
+      "games": ["sriv"],
+      "url": "https://www.saintsrowmods.com/forum/threads/sriv-sdk-release-b-clothing-item-tools.14707/",
+      "priority": 2,
+      "use_for": ["official SDK B", "customization assets"]
+    },
+    {
+      "id": "sriv-texture-guide",
+      "kind": "community_guide",
+      "games": ["sriv"],
+      "url": "https://www.saintsrowmods.com/forum/threads/editing-saving-and-packing-textures.18063/",
+      "priority": 3,
+      "use_for": ["DDS", "texture packing", "PEG", "Workshop"]
+    },
+    {
+      "id": "sriv-lua-guide",
+      "kind": "community_guide",
+      "games": ["sriv"],
+      "url": "https://www.saintsrowmods.com/forum/threads/scripting-for-dummies-eng-ru.15567/",
+      "priority": 3,
+      "use_for": ["Lua basics", "SRTT->SRIV function differences"]
+    },
+    {
+      "id": "saintexec",
+      "kind": "re_elected_reference",
+      "games": ["sriv_re_elected"],
+      "url": "https://github.com/Nathnefo/SaintExec",
+      "priority": 4,
+      "use_for": ["Re-Elected Lua runtime research only"],
+      "license": "GPL-3.0"
+    },
+    {
+      "id": "sr-mixfix",
+      "kind": "modern_hook_reference",
+      "games": ["srtt", "srtt_remastered", "sriv_re_elected"],
+      "url": "https://github.com/Clippy95/SR.MixFix",
+      "priority": 4,
+      "use_for": ["modern loose-file behavior", "remaster/Re-Elected future research"]
+    }
+  ]
+}

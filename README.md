@@ -73,9 +73,14 @@ Exit codes: `0` ok · `1` generic · `2` validation · `3` not-found ·
 python mcp_server\server.py        # stdio JSON-RPC; register with your client
 ```
 
-12 typed tools: `sr_doctor sr_game_detect sr_capabilities sr_asset_search
-sr_asset_origin sr_asset_extract sr_xtbl_query sr_project_new sr_mod_patch
-sr_mod_diff sr_mod_build sr_conflicts`.
+13 typed tools: `sr_doctor sr_game_detect sr_capabilities sr_knowledge_search
+sr_asset_search sr_asset_origin sr_asset_extract sr_xtbl_query sr_project_new
+sr_mod_patch sr_mod_diff sr_mod_build sr_conflicts`.
+
+`sr_knowledge_search` queries the additive `knowledge/` reference layer
+(format notes, SDK adapter recipes, upstream source map with provenance).
+It is evidence for research, never proof of a capability - the capability
+matrix stays authoritative.
 
 ## Third-party tools
 

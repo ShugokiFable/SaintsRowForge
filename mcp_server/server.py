@@ -13,7 +13,9 @@ Every tool wraps the SAME core the CLI uses; results are JSON text.
 """
 import json
 import os
+import subprocess
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
 
@@ -95,6 +97,18 @@ def sr_game_detect(a):
       "Per-game capability matrix with honest statuses.")
 def sr_capabilities(a):
     return capabilities.for_game(a["game"])
+
+
+@tool("sr_knowledge_search",
+      {"type": "object", "properties": {"query": {"type": "string"}},
+       "required": ["query"]},
+      "Search the additive knowledge/ layer (format notes, SDK recipes, "
+      "upstream source map). Reference only - never proof of a capability.")
+def sr_knowledge_search(a):
+    script = Path(__file__).resolve().parents[1] / "scripts" / "KnowledgeSearch.py"
+    r = subprocess.run([sys.executable, str(script), a["query"]],
+                       capture_output=True, text=True, timeout=30)
+    return {"results": (r.stdout + r.stderr)[-4000:]}
 
 
 @tool("sr_asset_search",

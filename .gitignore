@@ -10,5 +10,10 @@ err.txt
 __pycache__/
 *.pyc
 
+# upstream reference cache (fetched on demand, sha256-manifested)
+upstream/repos/
+upstream/*-extract/
+upstream/*.zip
+
 # local mod workspaces live in %LOCALAPPDATA%\SaintsRowForge\Workspaces
 Workspaces/

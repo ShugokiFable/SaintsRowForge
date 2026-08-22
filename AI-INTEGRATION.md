@@ -34,6 +34,10 @@ sr_conflicts workspace_a=<a> workspace_b=<b>
 ```
 
 CLI mirrors: `srforge doctor|asset|xtbl|project|mod|deps` with `--json`.
+Cross-mod table merge (mod manager) is CLI-side:
+`srforge merge --game sriv ModA/ ModB/` -> unioned pack + merge-report.json
+(additions union, distinct edits coexist, same-field conflicts logged,
+later-listed mod wins; non-table collisions flagged).
 
 ## Receipts
 
@@ -57,3 +61,15 @@ Exit codes mirror severity (see README).
   crunchers) which must be imported first — and adapters are not written yet.
 - ASM updates cover container size fields for rebuilt str2s; exotic
   containers (stubs, aux data) are preserved verbatim.
+
+<!-- SRFORGE-KNOWLEDGE-PACK -->
+## External knowledge layer
+
+Before guessing about unsupported formats, load order, SDK behavior, Lua calls, textures, meshes, zones, audio, or Workshop packaging, search the additive knowledge/ layer first:
+
+```powershell
+python scripts\KnowledgeSearch.py "<topic>"
+```
+
+knowledge/SOURCES.json is the machine-readable upstream map. Runtime evidence and the Forge capability matrix still outrank documentation. External source/tool availability does **not** mean the Forge implements that capability.
+<!-- /SRFORGE-KNOWLEDGE-PACK -->
