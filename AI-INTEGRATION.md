@@ -51,9 +51,9 @@ Exit codes mirror severity (see README).
 
 ## Known limits (do not claim more)
 
-- Textures/meshes/audio: inspect/read-only at most; real conversion needs
-  external tools (SRIV SDK crunchers) which must be imported first.
+- No PEG/CPEG, texture, mesh, or workshop code exists in this build; the
+  capability matrix reports these as `unsupported` on purpose.
+- Textures/meshes/audio conversion requires external tools (SRIV SDK
+  crunchers) which must be imported first — and adapters are not written yet.
 - ASM updates cover container size fields for rebuilt str2s; exotic
   containers (stubs, aux data) are preserved verbatim.
-- No workshop upload automation; SRIV workshop support is partial-table
-  merge only (experimental).

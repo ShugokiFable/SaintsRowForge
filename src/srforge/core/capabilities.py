@@ -22,7 +22,8 @@ MATRIX = {
         "lua.inspect":       {"status": "native", "note": "SR Lua dialect: static checks only"},
         "strings.read":      {"status": "native"},
         "strings.write":     {"status": "native"},
-        "peg.read":          {"status": "read_only", "note": "header/entry inspection"},
+        "peg.read":          {"status": "unsupported",
+                               "note": "no PEG/CPEG parser in this build yet"},
         "mesh.export":       {"status": "manual", "requires": ["sriv-sdk-legacy"]},
         "game.detect":       {"status": "native"},
     },
@@ -40,11 +41,14 @@ MATRIX = {
         "lua.inspect":       {"status": "native", "note": "static checks only; runtime behavior unproven"},
         "strings.read":      {"status": "native"},
         "strings.write":     {"status": "native"},
-        "peg.read":          {"status": "read_only"},
-        "texture.convert":   {"status": "experimental", "requires": ["pillow"]},
-        "mesh.export":       {"status": "adapter", "requires": ["zinyaks-crunchers"],
-                              "note": "SDK crunchers present; FBX->xml step needs legacy Python 2.6 chain"},
-        "workshop.package":  {"status": "experimental", "note": "partial-table mod format per Volition workshop docs"},
+        "peg.read":          {"status": "unsupported",
+                               "note": "no PEG/CPEG parser in this build yet"},
+        "texture.convert":   {"status": "unsupported",
+                               "note": "no texture converter in this build yet"},
+        "mesh.export":       {"status": "manual", "requires": ["zinyaks-crunchers"],
+                               "note": "SDK crunchers exist; FBX->xml step needs legacy Python 2.6 chain; no adapter coded"},
+        "workshop.package":  {"status": "unsupported",
+                               "note": "partial-table merge designed but not implemented"},
         "game.detect":       {"status": "native"},
     },
 }
@@ -61,6 +65,14 @@ def get(game, cap):
     if not m:
         raise ForgeError("SRF-GAME-001", f"unknown game {game!r} (use srtt|sriv)")
     return m.get(cap)
+
+
+def for_game(game):
+    """Whole per-game matrix (used by doctor + sr_capabilities)."""
+    if game not in MATRIX:
+        raise ForgeError("SRF-GAME-001", f"unknown game {game!r} (use srtt|sriv)")
+    import copy
+    return copy.deepcopy(MATRIX[game])
 
 
 def require(game, cap):

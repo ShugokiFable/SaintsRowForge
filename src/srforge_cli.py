@@ -178,14 +178,29 @@ def cmd_asset(args):
 def cmd_xtbl(args):
     from srforge.formats.xtbl import Xtbl
     if args.op == "query":
-        x = Xtbl.load(args.file)
-        rec = x.find_record(args.record)
-        if not rec:
-            raise ForgeError("SRF-XTBL-E04", f"record '{args.record}' not found in {args.file}")
-        el = x.get_field(args.record, args.field) if args.field else rec
-        _emit({"record": args.record,
-               "field": args.field,
-               "value": (el.text or "") if args.field else None})
+        # resolve from vanilla archives when --game given; plain path otherwise
+        if getattr(args, "game", None):
+            import tempfile
+            idx = _index_for(args.game)
+            with tempfile.TemporaryDirectory() as td:
+                modbuild.extract_to(idx, args.file, td)
+                x = Xtbl.load(os.path.join(td, os.path.basename(args.file)))
+                rec = x.find_record(args.record)
+                el = x.get_field(args.record, args.field) if args.field else rec
+                val = (el.text or "") if (args.field and el is not None) else None
+                if rec is None:
+                    raise ForgeError("SRF-XTBL-E04",
+                                     f"record '{args.record}' not found in {args.file}")
+                _emit({"record": args.record, "field": args.field, "value": val})
+        else:
+            x = Xtbl.load(args.file)
+            rec = x.find_record(args.record)
+            if not rec:
+                raise ForgeError("SRF-XTBL-E04", f"record '{args.record}' not found in {args.file}")
+            el = x.get_field(args.record, args.field) if args.field else rec
+            _emit({"record": args.record,
+                   "field": args.field,
+                   "value": (el.text or "") if args.field else None})
         return ExitCode.OK
     raise ForgeError("SRF-CLI-001", f"use 'srforge mod patch' or jobs for edits")
 
@@ -299,9 +314,14 @@ def build_flow(args):
         if os.path.isfile(os.path.join(ws, "extracted", f)):
             receipt["input_hashes"][f] = sha256_file(os.path.join(ws, "extracted", f))
 
-    # 2. patch into working/
+    # 2. patch into working/ (record per-op old->new in the receipt)
     results = modbuild.apply_ops(ops, os.path.join(ws, "extracted"),
                                  os.path.join(ws, "working"))
+    receipt["operations"] = [
+        {"op": {k: v for k, v in r["op"].items() if not k.startswith("__")},
+         "old": r.get("old"), "new": r.get("new")}
+        for r in results
+    ]
 
     # 3. semantic diff + scope guard
     changes = modbuild.semantic_diff_report(os.path.join(ws, "extracted"),
@@ -376,6 +396,7 @@ def main(argv=None):
     sp.add_argument("--file", required=True)
     sp.add_argument("--record", required=True)
     sp.add_argument("--field")
+    sp.add_argument("--game")  # resolve --file from vanilla archives when set
     sp.set_defaults(func=cmd_xtbl)
 
     sp = sub.add_parser("project"); sp.add_argument("--json", action="store_true")

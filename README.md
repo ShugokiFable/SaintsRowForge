@@ -15,10 +15,11 @@ MCP-capable agent (Hermes, Claude Desktop, Codex, ...) or directly via CLI.
 | ASM inspect/update (str2 sizes) | ✅ | ✅ byte-perfect round-trip vs vanilla |
 | le_strings extract/build | ✅ | ✅ |
 | Lua static lint | ✅ | ✅ |
-| PEG/CPEG textures | read-only inspect only | read-only inspect only |
-| Meshes / audio / workshop packaging | manual | experimental |
+| PEG/CPEG textures / meshes / audio / workshop | ❌ not implemented (reported `unsupported`) | ❌ not implemented (reported `unsupported`) |
 
 Vanilla archives are **never written**; every build goes to a workspace.
+The capability matrix (`srforge doctor`, `sr_capabilities`) is the source of
+truth — statuses there always reflect what this build actually contains.
 
 ## Quickstart
 
